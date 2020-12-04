@@ -163,7 +163,7 @@ class GeometryPipelineCalculator : public CalculatorBase {
     ASSIGN_OR_RETURN(std::string metadata_blob,
                      ReadContentBlobFromFile(metadata_path),
                      _ << "Failed to read a metadata blob from file!");
-
+	printf(metadata_blob.c_str());
     face_geometry::GeometryPipelineMetadata metadata;
     RET_CHECK(metadata.ParseFromString(metadata_blob))
         << "Failed to parse a metadata proto from a binary blob!";

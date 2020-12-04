@@ -1,5 +1,12 @@
 workspace(name = "mediapipe")
 
+register_execution_platforms(
+	":x64_windows-clang-cl"
+)
+
+register_toolchains(
+	"@local_config_cc//:cc-toolchain-x64_windows-clang-cl",
+)
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 skylib_version = "0.9.0"

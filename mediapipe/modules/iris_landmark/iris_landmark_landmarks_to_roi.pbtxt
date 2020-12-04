@@ -42,8 +42,9 @@ node {
   output_stream: "roi"
   options: {
     [mediapipe.RectTransformationCalculatorOptions.ext] {
-      scale_x: 2.3
-      scale_y: 2.3
+      scale_x: 4.3
+      scale_y: 4.3
+
       square_long: true
     }
   }
