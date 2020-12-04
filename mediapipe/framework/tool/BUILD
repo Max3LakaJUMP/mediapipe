@@ -13,10 +13,7 @@
 # limitations under the License.
 #
 
-load(
-    "//mediapipe/framework/port:build_config.bzl",
-    "mediapipe_cc_proto_library",
-)
+load("//mediapipe/framework/port:build_config.bzl", "mediapipe_proto_library")
 load(
     "//mediapipe/framework/tool:mediapipe_graph.bzl",
     "data_as_c_string",
@@ -44,9 +41,10 @@ cc_library(
     ],
 )
 
-proto_library(
+mediapipe_proto_library(
     name = "calculator_graph_template_proto",
     srcs = ["calculator_graph_template.proto"],
+    def_py_proto = False,
     visibility = ["//visibility:public"],
     deps = [
         "//mediapipe/framework:calculator_options_proto",
@@ -55,43 +53,14 @@ proto_library(
     ],
 )
 
-java_proto_library(
-    name = "calculator_graph_template_java_proto",
-    visibility = ["//visibility:public"],
-    deps = [":calculator_graph_template_proto"],
-)
-
-java_lite_proto_library(
-    name = "calculator_graph_template_java_proto_lite",
-    strict_deps = 0,
-    visibility = ["//visibility:public"],
-    deps = [":calculator_graph_template_proto"],
-)
-
-proto_library(
+mediapipe_proto_library(
     name = "source_proto",
     srcs = ["source.proto"],
     visibility = ["//visibility:public"],
-    deps = ["//mediapipe/framework:calculator_proto"],
-)
-
-mediapipe_cc_proto_library(
-    name = "calculator_graph_template_cc_proto",
-    srcs = ["calculator_graph_template.proto"],
-    cc_deps = [
-        "//mediapipe/framework:calculator_cc_proto",
-        "//mediapipe/framework/deps:proto_descriptor_cc_proto",
+    deps = [
+        "//mediapipe/framework:calculator_options_proto",
+        "//mediapipe/framework:calculator_proto",
     ],
-    visibility = ["//visibility:public"],
-    deps = [":calculator_graph_template_proto"],
-)
-
-mediapipe_cc_proto_library(
-    name = "source_cc_proto",
-    srcs = ["source.proto"],
-    cc_deps = ["//mediapipe/framework:calculator_cc_proto"],
-    visibility = ["//visibility:public"],
-    deps = [":source_proto"],
 )
 
 cc_binary(
@@ -163,6 +132,7 @@ cc_library(
     visibility = ["//mediapipe/framework:mediapipe_internal"],
     deps = [
         "//mediapipe/framework:calculator_cc_proto",
+        "//mediapipe/framework:input_stream_shard",
         "//mediapipe/framework:packet",
         "//mediapipe/framework:packet_generator_cc_proto",
         "//mediapipe/framework:packet_set",
@@ -551,20 +521,14 @@ data_as_c_string(
     outs = ["test_binarypb.inc"],
 )
 
-proto_library(
+mediapipe_proto_library(
     name = "node_chain_subgraph_proto",
     srcs = ["node_chain_subgraph.proto"],
+    visibility = ["//mediapipe:__subpackages__"],
     deps = [
+        "//mediapipe/framework:calculator_options_proto",
         "//mediapipe/framework:calculator_proto",
     ],
-)
-
-mediapipe_cc_proto_library(
-    name = "node_chain_subgraph_cc_proto",
-    srcs = ["node_chain_subgraph.proto"],
-    cc_deps = ["//mediapipe/framework:calculator_cc_proto"],
-    visibility = ["//mediapipe:__subpackages__"],
-    deps = [":node_chain_subgraph_proto"],
 )
 
 cc_test(

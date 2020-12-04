@@ -31,6 +31,10 @@
 namespace mediapipe {
 namespace python {
 
+// A mutex to guard the output stream observer python callback function.
+// Only one python callback can run at once.
+absl::Mutex callback_mutex;
+
 template <typename T>
 T ParseProto(const py::object& proto_object) {
   T proto;
@@ -98,12 +102,14 @@ void CalculatorGraphSubmodule(pybind11::module* module) {
         if ((init_with_binary_graph ? 1 : 0) + (init_with_graph_proto ? 1 : 0) +
                 (init_with_validated_graph_config ? 1 : 0) !=
             1) {
-          throw RaisePyError(
-              PyExc_ValueError,
-              "Please provide \'binary_graph\' to initialize the graph with"
-              " binary graph or provide \'graph_config\' to initialize the "
-              " with graph config proto or provide \'validated_graph_config\' "
-              " to initialize the with ValidatedGraphConfig object.");
+          throw RaisePyError(PyExc_ValueError,
+                             "Please provide one of the following: "
+                             "\'binary_graph_path\' to initialize the graph "
+                             "with a binary graph file, or "
+                             "\'graph_config\' to initialize the graph with a "
+                             "graph config proto, or "
+                             "\'validated_graph_config\' to initialize the "
+                             "graph with a ValidatedGraphConfig object.");
         }
         auto calculator_graph = absl::make_unique<CalculatorGraph>();
         RaisePyErrorIfNotOk(calculator_graph->Initialize(graph_config_proto));
@@ -391,6 +397,8 @@ void CalculatorGraphSubmodule(pybind11::module* module) {
          pybind11::function callback_fn) {
         RaisePyErrorIfNotOk(self->ObserveOutputStream(
             stream_name, [callback_fn, stream_name](const Packet& packet) {
+              // Acquire a mutex so that only one callback_fn can run at once.
+              absl::MutexLock lock(&callback_mutex);
               callback_fn(stream_name, packet);
               return mediapipe::OkStatus();
             }));

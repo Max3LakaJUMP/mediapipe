@@ -18,8 +18,6 @@ licenses(["notice"])
 
 package(default_visibility = ["//visibility:public"])
 
-exports_files(["LICENSE"])
-
 cc_library(
     name = "alignment_points_to_rects_calculator",
     srcs = ["alignment_points_to_rects_calculator.cc"],
@@ -250,9 +248,11 @@ cc_library(
         "@com_google_absl//absl/strings",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework/formats:image_frame",
+        "//mediapipe/framework/formats:image_frame_opencv",
         "//mediapipe/framework/formats:video_stream_header",
         "//mediapipe/framework/port:logging",
         "//mediapipe/framework/port:opencv_core",
+        "//mediapipe/framework/port:opencv_imgproc",
         "//mediapipe/framework/port:status",
         "//mediapipe/framework/port:vector",
         "//mediapipe/util:annotation_renderer",
@@ -276,6 +276,7 @@ cc_library(
     deps = [
         ":detection_label_id_to_text_calculator_cc_proto",
         "//mediapipe/framework/formats:detection_cc_proto",
+        "@com_google_absl//absl/container:node_hash_map",
         "//mediapipe/framework/port:status",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework:packet",
@@ -928,6 +929,7 @@ cc_library(
     deps = [
         ":collection_has_min_size_calculator_cc_proto",
         "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework/formats:classification_cc_proto",
         "//mediapipe/framework/formats:landmark_cc_proto",
         "//mediapipe/framework/formats:rect_cc_proto",
         "//mediapipe/framework/port:ret_check",
@@ -1037,6 +1039,29 @@ cc_library(
     deps = [
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework/formats:detection_cc_proto",
+        "//mediapipe/framework/port:ret_check",
+        "//mediapipe/framework/port:status",
+    ],
+    alwayslink = 1,
+)
+
+mediapipe_proto_library(
+    name = "logic_calculator_proto",
+    srcs = ["logic_calculator.proto"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//mediapipe/framework:calculator_options_proto",
+        "//mediapipe/framework:calculator_proto",
+    ],
+)
+
+cc_library(
+    name = "logic_calculator",
+    srcs = ["logic_calculator.cc"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":logic_calculator_cc_proto",
+        "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",
     ],

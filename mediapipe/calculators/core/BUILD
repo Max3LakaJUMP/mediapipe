@@ -116,6 +116,7 @@ mediapipe_proto_library(
     deps = [
         "//mediapipe/framework:calculator_options_proto",
         "//mediapipe/framework:calculator_proto",
+        "//mediapipe/framework/formats:classification_proto",
     ],
 )
 
@@ -225,12 +226,22 @@ cc_library(
     name = "concatenate_vector_calculator",
     srcs = ["concatenate_vector_calculator.cc"],
     hdrs = ["concatenate_vector_calculator.h"],
+    copts = select({
+        # Needed for "//mediapipe/framework/formats:tensor" compatibility on Apple
+        # platforms for Metal pulled in via the tensor.h header.
+        "//mediapipe:apple": [
+            "-x objective-c++",
+            "-fobjc-arc",  # enable reference-counting
+        ],
+        "//conditions:default": [],
+    }),
     visibility = ["//visibility:public"],
     deps = [
         ":concatenate_vector_calculator_cc_proto",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework/formats:classification_cc_proto",
         "//mediapipe/framework/formats:landmark_cc_proto",
+        "//mediapipe/framework/formats:tensor",
         "//mediapipe/framework/port:integral_types",
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",
@@ -791,14 +802,23 @@ cc_library(
     name = "split_vector_calculator",
     srcs = ["split_vector_calculator.cc"],
     hdrs = ["split_vector_calculator.h"],
+    copts = select({
+        "//mediapipe:apple": [
+            "-x objective-c++",
+            "-fobjc-arc",  # enable reference-counting
+        ],
+        "//conditions:default": [],
+    }),
     visibility = ["//visibility:public"],
     deps = [
         ":split_vector_calculator_cc_proto",
         "//mediapipe/framework/formats:detection_cc_proto",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework/formats:landmark_cc_proto",
+        "//mediapipe/framework/formats:classification_cc_proto",
         "//mediapipe/framework/formats:rect_cc_proto",
         "//mediapipe/framework/formats:matrix",
+        "//mediapipe/framework/formats:tensor",
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",
         "//mediapipe/util:resource_util",
@@ -1060,6 +1080,7 @@ cc_library(
         ":constant_side_packet_calculator_cc_proto",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework:collection_item_id",
+        "//mediapipe/framework/formats:classification_cc_proto",
         "//mediapipe/framework/port:integral_types",
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",

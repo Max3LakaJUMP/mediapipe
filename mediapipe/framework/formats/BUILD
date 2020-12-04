@@ -23,8 +23,6 @@ package(
 
 licenses(["notice"])
 
-exports_files(["LICENSE"])
-
 mediapipe_proto_library(
     name = "detection_proto",
     srcs = ["detection.proto"],
@@ -32,10 +30,34 @@ mediapipe_proto_library(
     deps = ["//mediapipe/framework/formats:location_data_proto"],
 )
 
+mediapipe_register_type(
+    base_name = "detection",
+    include_headers = ["mediapipe/framework/formats/detection.pb.h"],
+    types = [
+        "::mediapipe::Detection",
+        "::mediapipe::DetectionList",
+        "::std::vector<::mediapipe::Detection>",
+        "::std::vector<::mediapipe::DetectionList>",
+    ],
+    deps = ["//mediapipe/framework/formats:detection_cc_proto"],
+)
+
 mediapipe_proto_library(
     name = "classification_proto",
     srcs = ["classification.proto"],
     visibility = ["//visibility:public"],
+)
+
+mediapipe_register_type(
+    base_name = "classification",
+    include_headers = ["mediapipe/framework/formats/classification.pb.h"],
+    types = [
+        "::mediapipe::Classification",
+        "::mediapipe::ClassificationList",
+        "::std::vector<::mediapipe::Classification>",
+        "::std::vector<::mediapipe::ClassificationList>",
+    ],
+    deps = [":classification_cc_proto"],
 )
 
 mediapipe_proto_library(
@@ -214,6 +236,18 @@ mediapipe_proto_library(
     deps = ["//mediapipe/framework/formats:location_data_proto"],
 )
 
+mediapipe_register_type(
+    base_name = "rect",
+    include_headers = ["mediapipe/framework/formats/rect.pb.h"],
+    types = [
+        "::mediapipe::Rect",
+        "::mediapipe::NormalizedRect",
+        "::std::vector<::mediapipe::Rect>",
+        "::std::vector<::mediapipe::NormalizedRect>",
+    ],
+    deps = [":rect_cc_proto"],
+)
+
 mediapipe_proto_library(
     name = "landmark_proto",
     srcs = ["landmark.proto"],
@@ -231,6 +265,7 @@ mediapipe_register_type(
         "::mediapipe::NormalizedLandmarkList",
         "::std::vector<::mediapipe::Landmark>",
         "::std::vector<::mediapipe::NormalizedLandmark>",
+        "::std::vector<::mediapipe::NormalizedLandmarkList>",
     ],
     deps = [":landmark_cc_proto"],
 )
@@ -265,4 +300,52 @@ cc_test(
         "//mediapipe/framework/port:status",
         "@com_google_absl//absl/memory",
     ],
+)
+
+cc_library(
+    name = "tensor",
+    srcs = ["tensor.cc"],
+    hdrs = ["tensor.h"],
+    copts = select({
+        "//mediapipe:apple": [
+            "-x objective-c++",
+            "-fobjc-arc",  # enable reference-counting
+        ],
+        "//conditions:default": [],
+    }),
+    linkopts = select({
+        "//mediapipe:ios": [
+            "-framework CoreVideo",
+            "-framework MetalKit",
+        ],
+        "//conditions:default": [],
+    }),
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/synchronization",
+        "//mediapipe/framework:port",
+        "//mediapipe/framework/port:logging",
+    ] + select({
+        "//mediapipe/gpu:disable_gpu": [],
+        "//conditions:default": [
+            "//mediapipe/gpu:gl_base",
+            "//mediapipe/gpu:gl_context",
+        ],
+    }),
+)
+
+cc_test(
+    name = "tensor_test",
+    srcs = ["tensor_test.cc"],
+    deps = [
+        ":tensor",
+        "//mediapipe/framework/port:gtest_main",
+    ] + select({
+        "//conditions:default": [
+            "//mediapipe/gpu:gl_calculator_helper",
+            "//mediapipe/gpu:gpu_buffer_format",
+        ],
+        "//mediapipe/gpu:disable_gpu": [],
+    }),
 )

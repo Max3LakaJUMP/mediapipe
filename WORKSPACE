@@ -17,7 +17,7 @@ http_archive(
     sha256 = "1dde365491125a3db70731e25658dfdd3bc5dbdfd11b840b3e987ecf043c7ca0",
 )
 load("@bazel_skylib//lib:versions.bzl", "versions")
-versions.check(minimum_bazel_version = "2.0.0")
+versions.check(minimum_bazel_version = "3.4.0")
 
 
 # ABSL cpp library lts_2020_02_25
@@ -331,8 +331,9 @@ maven_install(
         "androidx.lifecycle:lifecycle-common:2.2.0",
         "androidx.annotation:annotation:aar:1.1.0",
         "androidx.appcompat:appcompat:aar:1.1.0-rc01",
-        "androidx.camera:camera-core:aar:1.0.0-alpha06",
-        "androidx.camera:camera-camera2:aar:1.0.0-alpha06",
+        "androidx.camera:camera-core:1.0.0-beta10",
+        "androidx.camera:camera-camera2:1.0.0-beta10",
+        "androidx.camera:camera-lifecycle:1.0.0-beta10",
         "androidx.constraintlayout:constraintlayout:aar:1.1.3",
         "androidx.core:core:aar:1.1.0-rc03",
         "androidx.legacy:legacy-support-v4:aar:1.0.0",
@@ -344,6 +345,7 @@ maven_install(
         "com.google.flogger:flogger-system-backend:0.3.1",
         "com.google.flogger:flogger:0.3.1",
         "com.google.guava:guava:27.0.1-android",
+        "com.google.guava:listenablefuture:1.0",
         "junit:junit:4.12",
         "org.hamcrest:hamcrest-library:1.3",
     ],
@@ -369,9 +371,9 @@ http_archive(
 )
 
 #Tensorflow repo should always go after the other external dependencies.
-# 2020-08-30
-_TENSORFLOW_GIT_COMMIT = "57b009e31e59bd1a7ae85ef8c0232ed86c9b71db"
-_TENSORFLOW_SHA256= "de7f5f06204e057383028c7e53f3b352cdf85b3a40981b1a770c9a415a792c0e"
+# 2020-10-30
+_TENSORFLOW_GIT_COMMIT = "84384703c0d8b502e33ff6fd7eefd219dca5ff8e"
+_TENSORFLOW_SHA256= "23fb322fc15a20f7a7838d9a31f8b16f60700a494ea654311a0aa8621769df98"
 http_archive(
     name = "org_tensorflow",
     urls = [
